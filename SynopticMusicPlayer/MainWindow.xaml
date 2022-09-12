@@ -6,8 +6,12 @@
         xmlns:local="clr-namespace:SynopticMusicPlayer"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    
+
     <Grid Background="#FF2C3B55">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="310*"/>
+            <RowDefinition Height="109*"/>
+        </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -16,21 +20,20 @@
 
         </Grid.ColumnDefinitions>
 
-        <DataGrid HorizontalScrollBarVisibility="Hidden" IsReadOnly="True" x:Name="songsDataGrid" Padding="10" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="16" FontFamily="Verdana" Background="#FF2C3B55" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF202B3E" RowBackground="#FF2C3B55" HeadersVisibility="Column" BorderBrush="{x:Null}" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown">
+        <DataGrid HorizontalScrollBarVisibility="Hidden" CanUserSortColumns="False" IsReadOnly="True" x:Name="songsDataGrid" Padding="10" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="16" FontFamily="Verdana" Background="#FF2C3B55" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF202B3E" RowBackground="#FF2C3B55" HeadersVisibility="Column" BorderBrush="{x:Null}" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown">
 
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="Name" Foreground="White"></DataGridTextColumn>
                 <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" Foreground="White"></DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding Length}" Header="Length" Foreground="White"></DataGridTextColumn>
 
             </DataGrid.Columns>
         </DataGrid>
 
-        <Rectangle Grid.Column="0" Fill="#FF1E2F4D"></Rectangle>
+        <Rectangle Grid.Column="0" Fill="#FF1E2F4D" Grid.RowSpan="2"></Rectangle>
 
 
-        <Grid>
+        <Grid Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -44,17 +47,22 @@
             </Grid.RowDefinitions>
 
             <Button Name="prevBtn" Grid.Row="1" Grid.Column="0" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image Source="backward.png"></Image>
+                <Image x:Name="prevBtnImg" Source="Icons/backward.png"></Image>
             </Button>
             <Button x:Name="playBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image Source="play.png"></Image>
+                <Image x:Name="playBtnImage" Source="Icons/play.png" MouseDown="Image_MouseDown"></Image>
             </Button>
             <Button Name="nextBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image Source="forward.png"></Image>
+                <Image x:Name="nextBtnImage" Source="Icons/forward.png"></Image>
             </Button>
 
-        </Grid>
+            <Slider x:Name="volumeSlider" Grid.ColumnSpan="3" Grid.Row="3" Margin="20,0" ValueChanged="volumeSlider_ValueChanged" Maximum="100"/>
 
+        </Grid>
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#FF1D293E" Height="30" VerticalAlignment="Bottom"></Rectangle>
+        <Label x:Name="helpIndicator" Grid.Row="1" Grid.ColumnSpan="3" Foreground="Red" Content="Please select a valid song" VerticalAlignment="Bottom" FontSize="14" HorizontalAlignment="Right" Margin="0,0,10,0" Visibility="Hidden">
+            
+        </Label>
 
     </Grid>
 

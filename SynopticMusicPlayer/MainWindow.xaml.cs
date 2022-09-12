@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
-using System.Media;
+using System.Windows.Media.Imaging;
 
 namespace SynopticMusicPlayer
 {
@@ -27,9 +18,13 @@ namespace SynopticMusicPlayer
         SqlConnection connection;
         string connectionString;
         MediaPlayer player;
+        bool musicPlaying;
+        bool songSelected;
+
         public MainWindow()
         {
             InitializeComponent();
+            setUp();
             connectionString = ConfigurationManager.ConnectionStrings["SynopticMusicPlayer.Properties.Settings.SongsConnectionString"].ConnectionString;
             PopulateSongs();
         }
@@ -42,7 +37,6 @@ namespace SynopticMusicPlayer
                 DataTable songTable = new DataTable();
                 adapter.Fill(songTable);
                 songsDataGrid.ItemsSource = songTable.DefaultView;
-
             }
         }
 
@@ -52,29 +46,63 @@ namespace SynopticMusicPlayer
             if (dataGrid != null)
             {
                 var index = dataGrid.SelectedIndex + 2;
-
-                var query = "SELECT Directory FROM Song WHERE Id = " + index;
-
-                using (connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-                    SqlCommand command = new SqlCommand(query, connection);
-                    string dir = (string)command.ExecuteScalar();
-                    connection.Close();
-                    MessageBox.Show(dir + " "+ index);
-                    playSelectedSong(dir);
-
-                }
-
+                string dir = directoryReturner(index);
+                player.Open(new Uri(dir));
+                musicPlaying = true;
+                songSelected = true;
+                helpIndicator.Visibility = Visibility.Hidden;
+                playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\pause.png")));
+                player.Play();                                           
             }
         }
-        private void playSelectedSong(string dir)
+
+        private string directoryReturner(int index)
         {
-            player.Open(new Uri(dir));
-            player.Play();
-            Console.WriteLine("test");
+            var query = "SELECT Directory FROM Song WHERE Id = " + index;
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(query, connection);
+                string dir = (string)command.ExecuteScalar();
+                connection.Close();
+                MessageBox.Show(dir);
+                return dir;
+            }
+
         }
 
+        private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            player.Volume = volumeSlider.Value / 100;
+        }
 
-}
+        private void setUp()
+        {
+            player = new MediaPlayer();
+            player.Volume = 0;
+            volumeSlider.Value = 25;
+        }
+
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(musicPlaying == true)//user pauses
+            {
+                playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\play.png")));
+                musicPlaying = false;
+                player.Pause();
+            }
+            else if(musicPlaying == false && songSelected == true)//user resumes
+            {
+                playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\pause.png")));
+
+                musicPlaying = true;
+                player.Play();
+            }
+            else
+            {
+                helpIndicator.Visibility = Visibility.Visible;
+            }
+        }
+    }
 }
