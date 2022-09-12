@@ -1,0 +1,61 @@
+﻿<Window x:Class="SynopticMusicPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SynopticMusicPlayer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    
+    <Grid Background="#FF2C3B55">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+
+        </Grid.ColumnDefinitions>
+
+        <DataGrid HorizontalScrollBarVisibility="Hidden" IsReadOnly="True" x:Name="songsDataGrid" Padding="10" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="16" FontFamily="Verdana" Background="#FF2C3B55" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF202B3E" RowBackground="#FF2C3B55" HeadersVisibility="Column" BorderBrush="{x:Null}" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown">
+
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Name}" Header="Name" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Length}" Header="Length" Foreground="White"></DataGridTextColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Rectangle Grid.Column="0" Fill="#FF1E2F4D"></Rectangle>
+
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+
+            </Grid.RowDefinitions>
+
+            <Button Name="prevBtn" Grid.Row="1" Grid.Column="0" Background="{x:Null}" BorderBrush="{x:Null}">
+                <Image Source="backward.png"></Image>
+            </Button>
+            <Button x:Name="playBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
+                <Image Source="play.png"></Image>
+            </Button>
+            <Button Name="nextBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}">
+                <Image Source="forward.png"></Image>
+            </Button>
+
+        </Grid>
+
+
+    </Grid>
+
+</Window>
