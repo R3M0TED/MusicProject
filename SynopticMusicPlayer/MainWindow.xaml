@@ -7,21 +7,32 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
-    <Grid Background="#FF2C3B55">
+    <Grid Background="#FF171717">
         <Grid.RowDefinitions>
             <RowDefinition Height="310*"/>
-            <RowDefinition Height="109*"/>
+            <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="110"></ColumnDefinition>
 
         </Grid.ColumnDefinitions>
+        <DataGrid  SelectionMode="Extended" HorizontalScrollBarVisibility="Hidden" BorderThickness="0" CanUserSortColumns="False" IsReadOnly="True" x:Name="songsDataGrid" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="20" Background="#FF171717" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF171717" HeadersVisibility="Column" BorderBrush="{x:Null}" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown" Foreground="White" ColumnHeaderHeight="35" VerticalContentAlignment="Center" Margin="0,5,0,0" Padding="0" SnapsToDevicePixels="True" FontWeight="Bold">
+            <DataGrid.Resources>
+                <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#FF343434" />
+                </Style>
+                <Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
+                    <Setter Property="Height" Value="30"  />
+                    <Setter Property="Background"  Value="#FF252525"  />
+                    <Setter Property="Margin"  Value="0,3,0,0"  />
+                    <Setter Property="TextElement.FontSize"  Value="15"  />
+                </Style>
 
-        <DataGrid HorizontalScrollBarVisibility="Hidden" CanUserSortColumns="False" IsReadOnly="True" x:Name="songsDataGrid" Padding="10" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="16" FontFamily="Verdana" Background="#FF2C3B55" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF202B3E" RowBackground="#FF2C3B55" HeadersVisibility="Column" BorderBrush="{x:Null}" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown">
-
+            </DataGrid.Resources>
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="Name" Foreground="White"></DataGridTextColumn>
@@ -30,8 +41,8 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Rectangle Grid.Column="0" Fill="#FF1E2F4D" Grid.RowSpan="2"></Rectangle>
-
+        <Rectangle  Grid.Column="0" Fill="#FF111111" Grid.RowSpan="2"/>
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Height="40" Fill="#FF1F1F1F" VerticalAlignment="Bottom"></Rectangle>
 
         <Grid Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -47,23 +58,57 @@
             </Grid.RowDefinitions>
 
             <Button Name="prevBtn" Grid.Row="1" Grid.Column="0" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image x:Name="prevBtnImg" Source="Icons/backward.png"></Image>
+                <Image x:Name="prevBtnImg" Source="Icons/backward.png" MouseDown="prevBtnImg_MouseDown"></Image>
             </Button>
             <Button x:Name="playBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
                 <Image x:Name="playBtnImage" Source="Icons/play.png" MouseDown="Image_MouseDown"></Image>
             </Button>
             <Button Name="nextBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image x:Name="nextBtnImage" Source="Icons/forward.png"></Image>
+                <Image x:Name="nextBtnImage" Source="Icons/forward.png" MouseDown="nextBtnImage_MouseDown"></Image>
             </Button>
 
-            <Slider x:Name="volumeSlider" Grid.ColumnSpan="3" Grid.Row="3" Margin="20,0" ValueChanged="volumeSlider_ValueChanged" Maximum="100"/>
+            <Slider x:Name="volumeSlider" Grid.ColumnSpan="3" Grid.Row="2" Margin="10,0,40,10" ValueChanged="volumeSlider_ValueChanged" Maximum="100" VerticalAlignment="Bottom"/>
+            <Image Grid.Row="2" Grid.Column="2" Height="30" Width="30" Source="Icons/Volume.png" MouseDown="nextBtnImage_MouseDown" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,5"></Image>
 
         </Grid>
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#FF1D293E" Height="30" VerticalAlignment="Bottom"></Rectangle>
-        <Label x:Name="helpIndicator" Grid.Row="1" Grid.ColumnSpan="3" Foreground="Red" Content="Please select a valid song" VerticalAlignment="Bottom" FontSize="14" HorizontalAlignment="Right" Margin="0,0,10,0" Visibility="Hidden">
-            
-        </Label>
+
+
+        <Grid Grid.Column="3" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90"></RowDefinition>
+                <RowDefinition Height="90"></RowDefinition>
+                <RowDefinition Height="90"></RowDefinition>
+                <RowDefinition Height="90"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+
+
+            </Grid.RowDefinitions>
+            <Rectangle  Grid.Column="3" Fill="#FF111111" Grid.RowSpan="5"/>
+
+            <Button x:Name="shuffleBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="0" Content="Shuffle" FontSize="16" Background="#FF616161" Foreground="White"></Button>
+            <Button x:Name="createPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="1"  Content="Create &#xa;  New &#xa;Playlist" FontSize="16" Background="#FF616161" Foreground="White" VerticalContentAlignment="Center" Click="createPlaylistBtn_Click"/>
+            <Button x:Name="finishPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="2"  Content="Finish Playlist" FontSize="16" Background="#FF358739" Foreground="White" VerticalContentAlignment="Center" Visibility="Hidden"/>
+            <Button x:Name="cancelPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="3"  Content="Cancel" FontSize="16" Background="#FF873535" Foreground="White" VerticalContentAlignment="Center" Visibility="Hidden" Click="cancelPlaylistBtn_Click_1"/>
+
+        </Grid>
+
+        <ComboBox x:Name="playlistPickerComboBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Height="35" VerticalAlignment="Top" Background="Black" Padding="0" Margin="5" SelectedIndex="0" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" SelectionChanged="playlistPickerComboBox_SelectionChanged" DropDownClosed="playlistPickerComboBox_DropDownClosed"/>
+        <Grid x:Name="playlistWindowGrid" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+
+            </Grid.RowDefinitions>
+            <Label Content="Please enter playlist name:" Grid.Row="1" Margin="30,25,30,20" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalContentAlignment="Center" Background="#FF666666"></Label>
+            <TextBox x:Name="playlistNameTxtBox" Grid.Row="1" Height="25" Width="150" BorderBrush="{x:Null}" Text="*Name Goes Here*" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
+            <Button x:Name="cancelPlaylistNameBtn" Grid.Row="1" Height="20" Width="70" Content="Cancel" Margin="0,60,80,0" Background="#FFC34E4E" FontWeight="Bold" Foreground="Black" BorderBrush="{x:Null}" Click="cancelPlaylistBtn_Click"></Button>
+            <Button x:Name="savePlaylistNameBtn" Grid.Row="1" Height="20" Width="70" Content="Save" Margin="80,60,0,0" Background="#FF8DD88D" FontWeight="Bold" Foreground="Black" BorderBrush="{x:Null}" Click="savePlaylistNameBtn_Click"></Button>
+
+
+        </Grid>
 
     </Grid>
+
 
 </Window>

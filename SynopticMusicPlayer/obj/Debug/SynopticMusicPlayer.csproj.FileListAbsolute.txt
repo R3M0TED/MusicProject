@@ -41,3 +41,5 @@ C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\forward.png
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\play.png
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\backward.png
+C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\obj\Debug\SynopticMusicPlayer.csproj.AssemblyReference.cache
+C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\Volume.png

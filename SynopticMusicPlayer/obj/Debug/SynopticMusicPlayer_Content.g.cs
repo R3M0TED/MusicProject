@@ -14,5 +14,6 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/backward.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("songs.mdf")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("songs_log.ldf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/volume.png")]
 
 
