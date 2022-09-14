@@ -20,7 +20,7 @@
             <ColumnDefinition Width="110"></ColumnDefinition>
 
         </Grid.ColumnDefinitions>
-        <DataGrid  SelectionMode="Extended" HorizontalScrollBarVisibility="Hidden" BorderThickness="0" CanUserSortColumns="False" IsReadOnly="True" x:Name="songsDataGrid" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="20" Background="#FF171717" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF171717" HeadersVisibility="Column" BorderBrush="{x:Null}" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown" Foreground="White" ColumnHeaderHeight="35" VerticalContentAlignment="Center" Margin="0,5,0,0" Padding="0" SnapsToDevicePixels="True" FontWeight="Bold">
+        <DataGrid  SelectionMode="Extended" HorizontalScrollBarVisibility="Hidden" BorderThickness="0" CanUserSortColumns="False" IsReadOnly="True" x:Name="songsDataGrid" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="2" FontSize="20" Background="#FF171717" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF171717" HeadersVisibility="Column" BorderBrush="{x:Null}" ScrollViewer.CanContentScroll="True" MouseDown="songsDataGrid_MouseDown" Foreground="White" ColumnHeaderHeight="35" VerticalContentAlignment="Center" Margin="0,5,0,40" Padding="0" SnapsToDevicePixels="True" FontWeight="Bold" Grid.RowSpan="2">
             <DataGrid.Resources>
                 <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background" Value="#FF343434" />
@@ -37,12 +37,14 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="Name" Foreground="White"></DataGridTextColumn>
                 <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Id}" Header="ID" Foreground="White"></DataGridTextColumn>
 
             </DataGrid.Columns>
         </DataGrid>
 
         <Rectangle  Grid.Column="0" Fill="#FF111111" Grid.RowSpan="2"/>
         <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Height="40" Fill="#FF1F1F1F" VerticalAlignment="Bottom"></Rectangle>
+        <Label x:Name="currentlyPlayingLabel" Content="Currently Playing:" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" VerticalAlignment="Bottom" Height="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" FontWeight="Bold"></Label>
 
         <Grid Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -69,7 +71,6 @@
 
             <Slider x:Name="volumeSlider" Grid.ColumnSpan="3" Grid.Row="2" Margin="10,0,40,10" ValueChanged="volumeSlider_ValueChanged" Maximum="100" VerticalAlignment="Bottom"/>
             <Image Grid.Row="2" Grid.Column="2" Height="30" Width="30" Source="Icons/Volume.png" MouseDown="nextBtnImage_MouseDown" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,5"></Image>
-
         </Grid>
 
 
@@ -87,24 +88,34 @@
 
             <Button x:Name="shuffleBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="0" Content="Shuffle" FontSize="16" Background="#FF616161" Foreground="White"></Button>
             <Button x:Name="createPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="1"  Content="Create &#xa;  New &#xa;Playlist" FontSize="16" Background="#FF616161" Foreground="White" VerticalContentAlignment="Center" Click="createPlaylistBtn_Click"/>
-            <Button x:Name="finishPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="2"  Content="Finish Playlist" FontSize="16" Background="#FF358739" Foreground="White" VerticalContentAlignment="Center" Visibility="Hidden"/>
+            <Button x:Name="finishPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="2"  Content="Finish Playlist" FontSize="16" Background="#FF358739" Foreground="White" VerticalContentAlignment="Center" Visibility="Hidden" Click="finishPlaylistBtn_Click"/>
             <Button x:Name="cancelPlaylistBtn" Margin="5,5,5,0" Grid.Column="3" Grid.Row="3"  Content="Cancel" FontSize="16" Background="#FF873535" Foreground="White" VerticalContentAlignment="Center" Visibility="Hidden" Click="cancelPlaylistBtn_Click_1"/>
 
         </Grid>
 
-        <ComboBox x:Name="playlistPickerComboBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Height="35" VerticalAlignment="Top" Background="Black" Padding="0" Margin="5" SelectedIndex="0" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" SelectionChanged="playlistPickerComboBox_SelectionChanged" DropDownClosed="playlistPickerComboBox_DropDownClosed"/>
-        <Grid x:Name="playlistWindowGrid" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden">
+        <ComboBox x:Name="playlistPickerComboBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Height="35" VerticalAlignment="Top" Background="Black" Padding="0" Margin="5" SelectedIndex="0" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" DropDownClosed="playlistPickerComboBox_DropDownClosed"/>
+        <Grid x:Name="playlistWindowGrid" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
 
             </Grid.RowDefinitions>
-            <Label Content="Please enter playlist name:" Grid.Row="1" Margin="30,25,30,20" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalContentAlignment="Center" Background="#FF666666"></Label>
+            <Label Content="Please enter playlist name:" Grid.Row="1" Margin="30,25,30,20" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalContentAlignment="Center" Background="#FF666666" Width="400" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="400" MinHeight="100"></Label>
             <TextBox x:Name="playlistNameTxtBox" Grid.Row="1" Height="25" Width="150" BorderBrush="{x:Null}" Text="*Name Goes Here*" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
             <Button x:Name="cancelPlaylistNameBtn" Grid.Row="1" Height="20" Width="70" Content="Cancel" Margin="0,60,80,0" Background="#FFC34E4E" FontWeight="Bold" Foreground="Black" BorderBrush="{x:Null}" Click="cancelPlaylistBtn_Click"></Button>
             <Button x:Name="savePlaylistNameBtn" Grid.Row="1" Height="20" Width="70" Content="Save" Margin="80,60,0,0" Background="#FF8DD88D" FontWeight="Bold" Foreground="Black" BorderBrush="{x:Null}" Click="savePlaylistNameBtn_Click"></Button>
-
+            <Popup x:Name="playlistNameWindow" Placement="Mouse">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Rectangle Height="100" Width="400" Fill="#FF474747"></Rectangle>
+                    <Label Content="Please enter playlist name:" Foreground="White"></Label>
+                </Grid>
+            </Popup>
 
         </Grid>
 
