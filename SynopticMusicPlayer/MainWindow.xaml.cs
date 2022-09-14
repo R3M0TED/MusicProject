@@ -9,6 +9,7 @@ using System.Data;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace SynopticMusicPlayer
 {
@@ -27,6 +28,7 @@ namespace SynopticMusicPlayer
         int tableIndex;
         string playlistName;
         string playlistIDs;
+        string folderLocation = @"C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\Music\";
 
         public MainWindow()
         {
@@ -106,6 +108,7 @@ namespace SynopticMusicPlayer
                 SqlCommand command = new SqlCommand(query, connection);
                 string dir = (string)command.ExecuteScalar();
                 connection.Close();
+                dir = folderLocation + dir;
                 //MessageBox.Show(dir);
                 return dir;
             }
@@ -118,6 +121,7 @@ namespace SynopticMusicPlayer
 
         private void setUp()
         {
+            checkForUpdates();
             var query = "SELECT PlaylistName FROM Playlist";
 
             playlistPickerComboBox.Items.Add("All Songs");
@@ -298,8 +302,10 @@ namespace SynopticMusicPlayer
 
         private void cancelPlaylistBtn_Click(object sender, RoutedEventArgs e)
         {
-            playlistWindowGrid.Visibility = Visibility.Hidden;
+            playlistNameWindow.IsOpen = false;
             isCreatingPlaylist = false;
+            finishPlaylistBtn.Visibility = Visibility.Hidden;
+            cancelPlaylistBtn.Visibility = Visibility.Hidden;
             playlistName = null;
 
         }
@@ -309,10 +315,11 @@ namespace SynopticMusicPlayer
             playlistName = playlistNameTxtBox.Text;
             if (!string.IsNullOrWhiteSpace(playlistName))
             {
-                playlistWindowGrid.Visibility = Visibility.Hidden;
+                playlistNameWindow.IsOpen = false;
                 finishPlaylistBtn.Visibility = Visibility.Visible;
                 cancelPlaylistBtn.Visibility = Visibility.Visible;
                 isCreatingPlaylist = true;
+
             }
             else
             {
@@ -323,14 +330,7 @@ namespace SynopticMusicPlayer
 
         }
 
-        private void cancelPlaylistBtn_Click_1(object sender, RoutedEventArgs e)
-        {
-            finishPlaylistBtn.Visibility = Visibility.Hidden;
-            cancelPlaylistBtn.Visibility = Visibility.Hidden;
-            isCreatingPlaylist = false;
-            playlistName = null;
-
-        }
+   
 
 
 
@@ -380,6 +380,81 @@ namespace SynopticMusicPlayer
             }
         }
 
+
+        private void checkForUpdates()
+        {
+            string path = @"C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\Music";
+            int fileCount = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Length;
+            int rowCount = 0;
+            string query = "SELECT COUNT(*) FROM Songs";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand count = new SqlCommand(query, connection);
+
+                rowCount = (int) count.ExecuteScalar();
+                connection.Close();
+                MessageBox.Show(fileCount.ToString() + " " + rowCount.ToString());
+            }
+
+            if(fileCount != rowCount)
+            {
+                string[] fileEntries = Directory.GetFiles(path);
+
+                for (int i = 0; i < fileEntries.Length; i++)
+                {
+                    string filename = Path.GetFileName(fileEntries[i]);
+
+                    string secondquery = "SELECT * FROM Songs WHERE Directory = '" + filename + "'";
+
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        SqlCommand search = new SqlCommand(secondquery, connection);
+
+
+                        if(search.ExecuteScalar() == null)
+                        {
+                            var file = TagLib.File.Create(fileEntries[i]);
+                            var songTitle = file.Tag.Title;
+                            var songArtists = "";
+                            if (songTitle == null)//blank title use file name
+                            {
+                                songTitle = filename;
+                            }
+
+                            string[] songArtistArray = file.Tag.AlbumArtists;
+
+                              MessageBox.Show("Length: "+ songArtistArray.Length.ToString());
+                            
+                            if (songArtistArray.Length == 0)
+                            {
+                                songArtists = "Blank";
+                            }
+                            else
+                            {
+                                songArtists = songArtistArray[0];
+                            }
+
+                            MessageBox.Show("Title:" + songTitle + " Artist:" + songArtists + " filename:" + filename);
+                            var thirdquery = "INSERT INTO Songs(Name, Artist, Directory) VALUES(@name, @artist, @dir)";
+                            SqlCommand addSong = new SqlCommand(thirdquery, connection);
+                            addSong.Parameters.AddWithValue("@name", songTitle);
+                            addSong.Parameters.AddWithValue("@artist", songArtists);
+                            addSong.Parameters.AddWithValue("@dir", filename);
+
+                            addSong.ExecuteNonQuery();
+
+                            //add songtitle, artist and file name
+                        }
+
+
+                    }
+
+
+                }
+            }
+        }
         private void updateCurrentlyPlayingLabel(int tableIndex)
         {
             TextBlock name = songsDataGrid.Columns[0].GetCellContent(songsDataGrid.Items[tableIndex]) as TextBlock;
@@ -390,7 +465,9 @@ namespace SynopticMusicPlayer
 
         private void finishPlaylistBtn_Click(object sender, RoutedEventArgs e)
         {
-            var query = "INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES('thisisatest', '4,2,3')";
+            isCreatingPlaylist = false;
+            MessageBox.Show(playlistName + " " + playlistIDs);
+            var query = "INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES(@playlistName, @songIDs)";
             MessageBox.Show(query);
 
             //INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES('@playlistName', '@PlaylistIDs')
@@ -398,6 +475,8 @@ namespace SynopticMusicPlayer
             {
                 connection.Open();
                 SqlCommand insert = new SqlCommand(query, connection);
+                insert.Parameters.AddWithValue("@playlistName", playlistName);
+                insert.Parameters.AddWithValue("@songIDs", playlistIDs);
 
                 insert.ExecuteNonQuery();
                 connection.Close();
