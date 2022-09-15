@@ -39,7 +39,7 @@ namespace SynopticMusicPlayer
             PopulateSongs();
         }
 
-        private void PopulateSongs()
+        private void PopulateSongs() //Populate DataGrid with ALL SONGS
         {
             using (connection = new SqlConnection(connectionString))
             using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Songs", connection))
@@ -50,17 +50,17 @@ namespace SynopticMusicPlayer
             }
         }
 
-        private void songsDataGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void songsDataGrid_MouseDown(object sender, MouseButtonEventArgs e)//user clicks a song within the datagrid
         {
             var dataGrid = sender as DataGrid;
             if (dataGrid != null)
             {
                 try
                 {
-                    tableIndex = dataGrid.SelectedIndex;
+                    tableIndex = dataGrid.SelectedIndex;//Get clicked index
                     //MessageBox.Show(tableIndex.ToString());
 
-                    TextBlock id = songsDataGrid.Columns[2].GetCellContent(songsDataGrid.Items[tableIndex]) as TextBlock;
+                    TextBlock id = songsDataGrid.Columns[2].GetCellContent(songsDataGrid.Items[tableIndex]) as TextBlock;//Save Song ID from selected row index
                     currentSongID = Int32.Parse(id.Text);
                     if (isCreatingPlaylist != true)
                     {
@@ -97,9 +97,6 @@ namespace SynopticMusicPlayer
 
         private string directoryReturner(int index)
         {
-
-
-
             var query = "SELECT Directory FROM Songs WHERE Id = " + index;
 
             using (connection = new SqlConnection(connectionString))
@@ -287,17 +284,6 @@ namespace SynopticMusicPlayer
             {
                 playlistNameWindow.IsOpen = false;
             }
-
-            //if (playlistWindowGrid.Visibility != Visibility.Visible)
-            //{
-
-            //    playlistWindowGrid.Visibility = Visibility.Visible;
-            //}
-            //else
-            //{
-            //    playlistWindowGrid.Visibility = Visibility.Hidden;
-
-            //}
         }
 
         private void cancelPlaylistBtn_Click(object sender, RoutedEventArgs e)
@@ -386,74 +372,109 @@ namespace SynopticMusicPlayer
             string path = @"C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\Music";
             int fileCount = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Length;
             int rowCount = 0;
-            string query = "SELECT COUNT(*) FROM Songs";
+            string rowCountQuery = "SELECT COUNT(*) FROM Songs";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand count = new SqlCommand(query, connection);
+                SqlCommand count = new SqlCommand(rowCountQuery, connection);
 
                 rowCount = (int) count.ExecuteScalar();
+
+
+                SqlCommand addSong = connection.CreateCommand();
+                addSong.CommandText = "INSERT INTO Songs(Name, Artist, Directory) VALUES('hg', 'asd', 'sdfsdf')";
+                addSong.ExecuteNonQuery();
                 connection.Close();
-                MessageBox.Show(fileCount.ToString() + " " + rowCount.ToString());
             }
 
-            if(fileCount != rowCount)
-            {
-                string[] fileEntries = Directory.GetFiles(path);
-
-                for (int i = 0; i < fileEntries.Length; i++)
-                {
-                    string filename = Path.GetFileName(fileEntries[i]);
-
-                    string secondquery = "SELECT * FROM Songs WHERE Directory = '" + filename + "'";
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        SqlCommand search = new SqlCommand(secondquery, connection);
 
 
-                        if(search.ExecuteScalar() == null)
-                        {
-                            var file = TagLib.File.Create(fileEntries[i]);
-                            var songTitle = file.Tag.Title;
-                            var songArtists = "";
-                            if (songTitle == null)//blank title use file name
-                            {
-                                songTitle = filename;
-                            }
 
-                            string[] songArtistArray = file.Tag.AlbumArtists;
+            //if (fileCount != rowCount)
+            //{
+            //    string[] fileEntries = Directory.GetFiles(path);
 
-                              MessageBox.Show("Length: "+ songArtistArray.Length.ToString());
-                            
-                            if (songArtistArray.Length == 0)
-                            {
-                                songArtists = "Blank";
-                            }
-                            else
-                            {
-                                songArtists = songArtistArray[0];
-                            }
+            //    for (int i = 0; i < fileEntries.Length; i++)
+            //    {
+            //        string filename = Path.GetFileName(fileEntries[i]);
 
-                            MessageBox.Show("Title:" + songTitle + " Artist:" + songArtists + " filename:" + filename);
-                            var thirdquery = "INSERT INTO Songs(Name, Artist, Directory) VALUES(@name, @artist, @dir)";
-                            SqlCommand addSong = new SqlCommand(thirdquery, connection);
-                            addSong.Parameters.AddWithValue("@name", songTitle);
-                            addSong.Parameters.AddWithValue("@artist", songArtists);
-                            addSong.Parameters.AddWithValue("@dir", filename);
+            //        string returnFileNameQuery = "SELECT * FROM Songs WHERE Directory = '" + filename + "'";
 
-                            addSong.ExecuteNonQuery();
-
-                            //add songtitle, artist and file name
-                        }
+            //        using (SqlConnection connection = new SqlConnection(connectionString))
+            //        {
+            //            connection.Open();
+            //            SqlCommand search = new SqlCommand(returnFileNameQuery, connection);
 
 
-                    }
+            //            if (search.ExecuteScalar() == null)
+            //            {
+            //                var file = TagLib.File.Create(fileEntries[i]);
+            //                var songTitle = file.Tag.Title;
+            //                var songArtists = "";
+            //                if (songTitle == null)//blank title use file name
+            //                {
+            //                    songTitle = filename;
+            //                }
+
+            //                string[] songArtistArray = file.Tag.AlbumArtists;
+
+            //                if (songArtistArray.Length == 0)
+            //                {
+            //                    songArtists = "Blank";
+            //                }
+            //                else
+            //                {
+            //                    songArtists = songArtistArray[0];
+            //                }
+
+            //                var insertSongQuery = "INSERT INTO Songs(Name, Artist, Directory) VALUES(@name, @artist, @dir)";
 
 
-                }
-            }
+            //                SqlCommand addSong = connection.CreateCommand();
+            //                addSong.Parameters.AddWithValue("@name", songTitle);
+            //                addSong.Parameters.AddWithValue("@artist", songArtists);
+            //                addSong.Parameters.AddWithValue("@dir", filename);
+
+            //                SqlTransaction transaction;
+            //                transaction = connection.BeginTransaction();
+            //                addSong.Connection = connection;
+            //                addSong.Transaction = transaction;
+            //                try
+            //                {
+            //                    addSong.CommandText = "INSERT INTO Songs(Name, Artist, Directory) VALUES(@name, @artist, @dir)";
+            //                    var test = addSong.ExecuteNonQuery();
+            //                    MessageBox.Show(test.ToString());
+            //                    addSong.ExecuteNonQuery();
+            //                    transaction.Commit();
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    MessageBox.Show("Error");
+
+            //                    Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
+            //                    Console.WriteLine("  Message: {0}", ex.Message);
+            //                    try //Attempt to roll back transaction
+            //                    {
+            //                        transaction.Rollback();
+            //                    }
+            //                    catch (Exception ex2)
+            //                    {
+            //                        Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
+            //                        Console.WriteLine("  Message: {0}", ex2.Message);
+            //                    }
+            //                }
+
+
+
+
+            //                add songtitle, artist and file name
+            //            }
+
+            //        }
+
+
+            //   }
+            //}
         }
         private void updateCurrentlyPlayingLabel(int tableIndex)
         {
@@ -467,21 +488,26 @@ namespace SynopticMusicPlayer
         {
             isCreatingPlaylist = false;
             MessageBox.Show(playlistName + " " + playlistIDs);
-            var query = "INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES(@playlistName, @songIDs)";
-            MessageBox.Show(query);
+            var insertPlaylistQuery = "INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES(@playlistName, @songIDs)";
+            MessageBox.Show(insertPlaylistQuery);
 
             //INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES('@playlistName', '@PlaylistIDs')
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand insert = new SqlCommand(query, connection);
+                SqlCommand insert = new SqlCommand(insertPlaylistQuery, connection);
                 insert.Parameters.AddWithValue("@playlistName", playlistName);
                 insert.Parameters.AddWithValue("@songIDs", playlistIDs);
+                finishPlaylistBtn.Visibility = Visibility.Hidden;
+                cancelPlaylistBtn.Visibility = Visibility.Hidden;
 
                 insert.ExecuteNonQuery();
                 connection.Close();
+                playlistPickerComboBox.Items.Add(playlistName);
             }
         }
+
+
     }
 }
     

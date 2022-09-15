@@ -84,7 +84,7 @@
                 <Image x:Name="prevBtnImg" Source="Icons/backward.png" MouseDown="prevBtnImg_MouseDown"></Image>
             </Button>
             <Button x:Name="playBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
-                <Image x:Name="playBtnImage" Source="Icons/play.png" MouseDown="Image_MouseDown"></Image>
+                <Image x:Name="playBtnImage" Source="Icons/play.png" MouseDown="Image_MouseDown"/>
             </Button>
             <Button Name="nextBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}">
                 <Image x:Name="nextBtnImage" Source="Icons/forward.png" MouseDown="nextBtnImage_MouseDown"></Image>
