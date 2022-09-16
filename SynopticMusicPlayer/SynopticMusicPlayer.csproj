@@ -79,11 +79,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="SongsDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SongsDataSet.xsd</DependentUpon>
-    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -120,22 +115,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="SongsDataSet.xsc">
-      <DependentUpon>SongsDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="SongsDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>SongsDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="SongsDataSet.xss">
-      <DependentUpon>SongsDataSet.xsd</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\addPlaylist.png" />
+    <Resource Include="Icons\agree.png" />
+    <Resource Include="Icons\close.png" />
     <Content Include="Icons\pause.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -148,17 +135,11 @@
     <Content Include="Icons\backward.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Icons\Search.png" />
-    <Content Include="Songs.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Songs_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>Songs.mdf</DependentUpon>
-    </Content>
     <Content Include="Icons\Volume.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Icons\shuffle.png" />
+    <Resource Include="Icons\search.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

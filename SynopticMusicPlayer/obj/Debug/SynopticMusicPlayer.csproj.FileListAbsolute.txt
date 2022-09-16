@@ -16,8 +16,6 @@ C:\Users\user\source\repos\SynopticMusicPlayer\SynopticMusicPlayer\obj\Debug\Syn
 C:\Users\user\source\repos\SynopticMusicPlayer\SynopticMusicPlayer\obj\Debug\SynopticMusicPlayer.exe
 C:\Users\user\source\repos\SynopticMusicPlayer\SynopticMusicPlayer\obj\Debug\SynopticMusicPlayer.pdb
 C:\Users\user\source\repos\SynopticMusicPlayer\SynopticMusicPlayer\obj\Debug\SynopticMusicPlayer.csproj.AssemblyReference.cache
-C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Songs.mdf
-C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Songs_log.ldf
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\SynopticMusicPlayer.exe.config
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\SynopticMusicPlayer.exe
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\SynopticMusicPlayer.pdb
