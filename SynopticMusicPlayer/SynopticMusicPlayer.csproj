@@ -120,6 +120,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\listview.png" />
     <Resource Include="Icons\addPlaylist.png" />
     <Resource Include="Icons\agree.png" />
     <Resource Include="Icons\close.png" />
