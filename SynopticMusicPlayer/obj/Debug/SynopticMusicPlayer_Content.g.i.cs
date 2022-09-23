@@ -8,6 +8,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/openfolder.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/help.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage1.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage2.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage3.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage4.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/pause.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/forward.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/play.png")]

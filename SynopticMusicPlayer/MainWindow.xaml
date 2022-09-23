@@ -320,18 +320,27 @@
                     <Setter Property="BorderBrush" Value="#FF3A3A3A"></Setter>
                     <Setter Property="Padding" Value="20,0,0,0"></Setter>
                 </Style>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                   Color="#FF535353"/>
 
-    
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                   Color="Transparent"/>
 
             </DataGrid.Resources>
 
             <DataGrid.Columns>
+                <DataGridTextColumn Width="20"></DataGridTextColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Name}" Header="Name" Foreground="White"></DataGridTextColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Artist}" Header="Artist" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Album}" Header="Album" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Length}" Header="Length" Foreground="White"></DataGridTextColumn>
+
                 <DataGridTextColumn Binding="{Binding Id}" Header="ID" Foreground="White"></DataGridTextColumn>
+                <DataGridTextColumn Width="40"></DataGridTextColumn>
 
             </DataGrid.Columns>
         </DataGrid>
+        <Label x:Name="noSongsFoundLabel" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Content="No Songs Found" Foreground="White" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
 
         <Rectangle  Grid.Column="0" Fill="#FF111111" Grid.RowSpan="2"/>
         <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Height="40" Fill="#FF1F1F1F" VerticalAlignment="Bottom">
@@ -339,10 +348,21 @@
                 <DropShadowEffect Direction="90" Opacity="0.5"/>
             </Rectangle.Effect>
         </Rectangle>
-        <Rectangle Fill="#FF555555" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Height="40" VerticalAlignment="Bottom"></Rectangle>
-        <TextBox x:Name="searchBox" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Height="30" VerticalAlignment="Bottom" Margin="5" VerticalContentAlignment="Center" Padding="10,0,0,0" FontWeight="Bold" FontSize="14" Background="#FF838383" Foreground="White" MaxLength="40" TextChanged="searchBox_TextChanged"/>
-        <Label x:Name="searchPlaceholder"  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Height="30" VerticalAlignment="Bottom" Margin="5" VerticalContentAlignment="Center" Padding="10,0,0,0" FontWeight="Bold" FontSize="14" Background="{x:Null}" Foreground="White" Content="Search for music"/>
-        <Image Grid.Column="2" Grid.Row="1" Height="20" Width="20" Source="Icons/search.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10"/>
+
+
+        <Grid x:Name="searchBarGrid"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Height="40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Rectangle Fill="#FF555555" Grid.Column="0" Grid.Row="1" Height="40" VerticalAlignment="Bottom"></Rectangle>
+            <TextBox x:Name="searchBox" Grid.Column="0"  Grid.Row="1" Height="30" VerticalAlignment="Bottom" Margin="5" VerticalContentAlignment="Center" Padding="10,0,0,0" FontWeight="Bold" FontSize="14" Background="#FF838383" Foreground="White" MaxLength="40" TextChanged="searchBox_TextChanged"/>
+            <Label x:Name="searchPlaceholder"  Grid.Column="0"  Grid.Row="1" Height="30" VerticalAlignment="Bottom" Margin="5" VerticalContentAlignment="Center" Padding="10,0,0,0" FontWeight="Bold" FontSize="14" Background="{x:Null}" Foreground="White" Content="Search for music"/>
+            <Image Grid.Column="0" Grid.Row="1" Height="20" Width="20" Source="Icons/search.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10"/>
+            <Button x:Name="helpBtn" Grid.Column="1" Background="#FF14529C"  BorderBrush="#FF12437E" Click="helpBtn_Click">
+                <Image Source="Icons/help.png"></Image>
+            </Button>
+        </Grid>
         <Label Content="Currently Playing:" Grid.Row="2" Foreground="White" VerticalAlignment="Bottom" Height="40" FontWeight="Bold" FontSize="14" Padding="5,0"/>
         <Label x:Name="currentlyPlayingLabel" Content="Nothing" Grid.Row="2" Foreground="White" VerticalAlignment="Bottom" Height="40" FontWeight="Bold" Padding="5,0,5,5" VerticalContentAlignment="Bottom"/>
 
@@ -355,27 +375,29 @@
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
 
             </Grid.RowDefinitions>
 
 
 
-            <Button Name="prevBtn" Grid.Row="1" Grid.Column="0" Background="{x:Null}" BorderBrush="{x:Null}" Height="85">
-                <Image x:Name="prevBtnImg" Source="Icons/backward.png" MouseDown="prevBtnImg_MouseDown"></Image>
+            <Button Name="prevSongBtn" Grid.Row="1" Grid.Column="0" Background="{x:Null}" BorderBrush="{x:Null}" Height="85" Click="prevSongBtn_Click">
+                <Image x:Name="prevBtnImg" Source="Icons/backward.png" ></Image>
             </Button>
-            <Button x:Name="playBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}" Height="85" VerticalAlignment="Center" Width="85">
-                <Image x:Name="playBtnImage" Source="Icons/play.png" MouseDown="Image_MouseDown"/>
+            <Button x:Name="playSongBtn" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}" Height="85" VerticalAlignment="Center" Width="85" Click="playSongBtn_Click">
+                <Image x:Name="playBtnImage" Source="Icons/play.png"/>
             </Button>
-            <Button Name="nextBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}" Height="85">
-                <Image x:Name="nextBtnImage" Source="Icons/forward.png" MouseDown="nextBtnImage_MouseDown"></Image>
+            <Button Name="nextSongBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}" Height="85" Click="nextSongBtn_Click">
+                <Image x:Name="nextBtnImage" Source="Icons/forward.png"></Image>
+
             </Button>
 
-            <Slider x:Name="playbackSlider" Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Top" Margin="15,10,15,0" Style="{DynamicResource SliderStyle1}" Maximum="100" ValueChanged="playbackSlider_ValueChanged"></Slider>
-            <Slider x:Name="volumeSlider"  Grid.ColumnSpan="2" Grid.Row="2" Margin="15,10,80,0" ValueChanged="volumeSlider_ValueChanged" Maximum="100" VerticalAlignment="Center" Style="{DynamicResource SliderStyle1}"/>
+            <Slider x:Name="playbackSlider" IsMoveToPointEnabled="True" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Margin="15,10,15,0" Style="{DynamicResource SliderStyle1}" Maximum="100" MouseLeftButtonUp="playbackSlider_MouseLeftButtonUp"/>
+            <Slider x:Name="volumeSlider"  Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,80,25" ValueChanged="volumeSlider_ValueChanged" Maximum="100" VerticalAlignment="Bottom" Style="{DynamicResource SliderStyle1}"/>
 
 
-            <Button Style="{DynamicResource RoundButton}" x:Name="shuffleBtn" Margin="5,5,15,5" Grid.Column="3" Grid.Row="3" FontSize="16" Background="{x:Null}" Foreground="White" Width="40" Height="40" Click="shuffleBtn_Click" HorizontalAlignment="Right">
+            <Button Style="{DynamicResource RoundButton}" x:Name="shuffleBtn" Margin="5,0,15,15" Grid.Column="3" Grid.Row="2" FontSize="16" Background="{x:Null}" Foreground="White" Width="40" Height="40" Click="shuffleBtn_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Image Source="Icons/shuffle.png">
 
                 </Image>
@@ -409,13 +431,13 @@
 
             </Grid.RowDefinitions>
             <ComboBox x:Name="playlistPickerComboBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="35" VerticalAlignment="Top" Background="Black" Padding="0" Margin="5,5,5,0" SelectedIndex="0" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" DropDownClosed="playlistPickerComboBox_DropDownClosed"/>
-            <Button x:Name="addNewPlaylistBtn" Grid.Column="3" Margin="0,5,5,0" Background="#FF727272" Click="addNewPlaylistBtn_Click" BorderBrush="#FF575756">
+            <Button x:Name="addNewPlaylistBtn" Grid.Column="3" Margin="0,5,5,0" Background="#FF343434" Click="addNewPlaylistBtn_Click" BorderBrush="#FF575756">
                 <Image Source="Icons/addPlaylist.png" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
             </Button>
             <Button x:Name="finishNewPlaylistBtn" Grid.Column="3" Margin="0,5,5,0" Background="#FF549925" Click="finishNewPlaylistBtn_Click" Visibility="Hidden" BorderBrush="#FF3E701C">
                 <Image Source="Icons/agree.png" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
             </Button>
-            <Button x:Name="viewCurrentPlaylistBtn" Grid.Column="3" Grid.Row="1" Margin="0,5,5,0" Background="#FF727272" BorderBrush="#FF575757" Visibility="Hidden" Click="viewCurrentPlaylistBtn_Click">
+            <Button x:Name="viewCurrentPlaylistBtn" Grid.Column="3" Grid.Row="1" Margin="0,5,5,0" Background="#FF343434" BorderBrush="#FF575757" Visibility="Hidden" Click="viewCurrentPlaylistBtn_Click">
                 <Image Source="Icons/listview.png" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
             </Button>
             <Button x:Name="cancelNewPlaylistBtn" Grid.Column="3" Grid.Row="2" Margin="0,5,5,0" Background="#FFD63F3F" Click="cancelNewPlaylistBtn_Click" BorderBrush="#FFAE3131" Visibility="Hidden">
@@ -430,7 +452,7 @@
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
-                <Rectangle x:Name="playlistNameWindowBG" Height="100" Width="250" Fill="#FF555555"></Rectangle>
+                <Rectangle x:Name="playlistNameWindowBG" Height="100" Width="250" Fill="#FF3C3C3C"></Rectangle>
                 <Label Content="Please enter playlist name:" Foreground="White" FontSize="16" FontWeight="Bold" HorizontalContentAlignment="Center"/>
                 <TextBox x:Name="playlistNameTxtBox" Height="25" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
                 <Button x:Name="cancelPlaylistNameBtn" Click="cancelNewPlaylistBtn_Click" Content="Cancel" Height="20" Width="70" VerticalAlignment="Bottom" Margin="0,0,80,10" Background="#FFD63F3F" FontWeight="Bold" BorderBrush="#FFA40000" Foreground="White"></Button>
@@ -444,14 +466,21 @@
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+
                 </Grid.RowDefinitions>
 
-                <Rectangle  Grid.RowSpan="3" Fill="#FF535353" Width="150" Height="70"></Rectangle>
-                <Button x:Name="addToPlaylistMenuBtn" Content="Add To Playlist" Grid.Row="0" FontSize="14" Margin="0,3" Background="#FF444444" Foreground="White" Click="addToPlaylistMenuBtn_Click"></Button>
+                <Rectangle  Grid.RowSpan="4" Fill="#FF535353" Width="160" Height="130"></Rectangle>
+                <Button x:Name="filterByAlbumBtn" Content="Filter By Album" Grid.Row="0" FontSize="14" Margin="0,3" Background="#FF444444" Foreground="White" Click="filterByAlbumBtn_Click"></Button>
+                <Button x:Name="addToPlaylistMenuBtn" Content="Add To Playlist" Grid.Row="1" FontSize="14" Margin="0,3" Background="#FF444444" Foreground="White" Click="addToPlaylistMenuBtn_Click"></Button>
+                <Button x:Name="deleteSongFromPlaylistBtn" Content="Delete Song from Playlist" Grid.Row="2" FontSize="14" Margin="0,0,0,3" Foreground="White" Background="#FF444444" Click="deleteSongFromPlaylistBtn_Click"></Button>
 
-                <Button x:Name="deleteSongEntirelyMenuBtn" Content="Delete Song Entirely" Grid.Row="2" FontSize="14" Margin="0,0,0,3" Foreground="White" Background="#FFA03333" Click="deleteSongEntirelyMenuBtn_Click"></Button>
+                <Button x:Name="deleteSongEntirelyMenuBtn" Content="Delete Song Entirely" Grid.Row="3" FontSize="14" Margin="0,0,0,3" Foreground="White" Background="#FFA03333" Click="deleteSongEntirelyMenuBtn_Click"></Button>
             </Grid>
         </Popup>
+
+
 
         <Popup x:Name="addToPlaylistPrompt" StaysOpen="False" Placement="MousePoint" PopupAnimation="Fade" AllowsTransparency="True">
             <Grid>
@@ -460,37 +489,142 @@
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
-                <Rectangle Height="100" Width="200" Fill="#FF555555"></Rectangle>
+                <Rectangle Height="100" Width="200" Fill="#FF3C3C3C"></Rectangle>
                 <Label Content="Pick a playlist" Foreground="White" FontSize="16" FontWeight="Bold" HorizontalContentAlignment="Center"/>
-                <ComboBox x:Name="addToPlaylistNamesComboBox" Height="30" Width="150"></ComboBox>
+                <ComboBox x:Name="addToPlaylistNamesComboBox" Height="30" Width="150" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></ComboBox>
                 <Button x:Name="cancelAddToPlaylistBtn" Content="Cancel" Height="20" Width="70" VerticalAlignment="Bottom" Margin="0,0,80,10" Background="#FFD63F3F" FontWeight="Bold" BorderBrush="#FFA40000" Foreground="White" Click="cancelAddToPlaylistBtn_Click"></Button>
                 <Button x:Name="saveToPlaylistBtn"   Content="Save" Height="20" Width="70" VerticalAlignment="Bottom" Margin="80,0,0,10" Background="#FF549925" FontWeight="Bold" BorderBrush="#FF218F17" Foreground="White" Click="saveToPlaylistBtn_Click"></Button>
 
             </Grid>
         </Popup>
 
-        <Popup x:Name="playlistPreviewPopUp" AllowsTransparency="True" PopupAnimation="Fade">
+        <Popup x:Name="playlistPreviewPopUp" AllowsTransparency="True" PopupAnimation="Fade" VerticalOffset="20">
             <Grid>
                 <Grid.RowDefinitions>
-                    
+
                 </Grid.RowDefinitions>
                 <Rectangle Fill="#FF424242" Width="850" Height="150"></Rectangle>
-                <DataGrid MaxHeight="200" VerticalScrollBarVisibility="Auto" x:Name="playlistSongPreviewerDataGrid" Background="#FF363636" Foreground="White" GridLinesVisibility="Horizontal" HeadersVisibility="Column" Margin="0" FontSize="16" FontWeight="Bold">
+                <DataGrid IsReadOnly="True" Padding="10" MaxHeight="200" VerticalScrollBarVisibility="Auto" x:Name="playlistSongPreviewerDataGrid" Background="#FF363636" Foreground="White" GridLinesVisibility="Horizontal" HeadersVisibility="Column" FontSize="16" FontWeight="Bold" BorderBrush="#FF515050">
                     <DataGrid.Resources>
                         <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="Background" Value="#FF343434" />
+                            <Setter Property="Background" Value="#FF515050" />
                         </Style>
                         <Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
                             <Setter Property="Height" Value="30"  />
                             <Setter Property="Background"  Value="#FF252525"  />
                             <Setter Property="Margin"  Value="0,3,0,0"  />
-                            <Setter Property="TextElement.FontSize"  Value="15"  />
+                            <Setter Property="TextElement.FontSize"  Value="13"  />
                             <Setter Property="BorderThickness" Value=" 0 0 0 2"></Setter>
                             <Setter Property="BorderBrush" Value="#FF3A3A3A"></Setter>
                         </Style>
-
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                        Color="#FF535353"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                   Color="Transparent"/>
                     </DataGrid.Resources>
                 </DataGrid>
+            </Grid>
+        </Popup>
+        
+       
+
+        <Popup x:Name="helpFAQmenu" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade" Placement="Center" VerticalOffset="10" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+
+                </Grid.RowDefinitions>
+                <Rectangle Grid.Row="0" Grid.RowSpan="3" Height="270" Width="420" Fill="#FF2F2F2F"></Rectangle>
+                <Label Grid.Row="0" Content="Need Help?" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Top" Margin="10,5,0,0" Height="40"></Label>
+
+                <StackPanel x:Name="faqStackPanel" Grid.Row="3" Background="#FF272727" PreviewMouseDown="faqStackPanel_PreviewMouseDown">
+                    <StackPanel.Resources>
+                        <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="{x:Type Label}">
+                            <Setter Property="Foreground" Value="#FF2D96E8" />
+                            <Setter Property="Margin" Value="10,0,0,0"></Setter>
+                            <Setter Property="Padding" Value="5,5,0,0"></Setter>
+                            <Setter Property="FontSize" Value="15"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#FF96D1FF"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+
+
+                    </StackPanel.Resources>
+                    <TextBlock  Grid.Row="1" Margin="15,3,10,0" FontSize="18" Foreground="White" TextDecorations="Underline">
+                    FAQ:
+                    </TextBlock>
+                    <Label x:Name="faqLabel1" Content=">What is this?" Grid.Row="3"></Label>
+                    <Label x:Name="faqLabel2" Content=">How do I play my music?" Grid.Row="3"></Label>
+                    <Label x:Name="faqLabel3" Content=">How can I add songs?" Grid.Row="3"></Label>
+                    <Label x:Name="faqLabel4" Content=">How can I create playlists?" Grid.Row="3"></Label>
+                    <Label x:Name="faqLabel5" Content=">How can I change playlists?" Grid.Row="3"></Label>
+                    <Label x:Name="faqLabel6" Content=">I've found a bug, what should I do?" Grid.Row="3"></Label>
+
+                </StackPanel>
+                <Label Content="Current Ver: 1.0" Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" Foreground="White" FontSize="14"></Label>
+            </Grid>
+        </Popup>
+
+        <Popup x:Name="helpMenuTemplate" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" Placement="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+
+                </Grid.RowDefinitions>
+                <Rectangle Grid.Row="0" Grid.RowSpan="3" Height="250" Width="420" Fill="#FF2F2F2F" MinWidth="400" MinHeight="250" Stroke="Black"></Rectangle>
+                <Label Grid.Row="0" Content="Need Help?" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Top" Margin="10,5,0,0" Height="40"></Label>
+
+                <StackPanel Grid.Row="3" Background="#FF272727">
+                    <StackPanel.Resources>
+                        <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="{x:Type Label}">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Margin" Value="10,0,0,0"></Setter>
+                            <Setter Property="Padding" Value="5,5,0,0"></Setter>
+                            <Setter Property="FontSize" Value="15"></Setter>
+
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock x:Name="helpMenuTitle" Grid.Row="1" Margin="15,3,10,0" FontSize="18" Foreground="#FF2D96E8" TextDecorations="Underline">
+                    What is this?
+                    </TextBlock>
+                    <TextBlock x:Name="helpMenuTextBlock" TextWrapping="Wrap" Foreground="White" Margin="10,0" Padding="5,0,5,6" FontSize="14" Grid.Row="3" MaxWidth="400" Height="140" Width="385">
+Music can be played by clicking on any song; this will automatically start playing the chosen song. You can skip or play previous songs by using the two arrow icons on the left of the screen. Need to pause for a second? No worries you can do just that by clicking on the big circle button on the left side of the screen.</TextBlock>
+
+                </StackPanel>
+                <StackPanel Grid.Row="3" Height="50" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="helpMenuBackBtn" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="70" Height="25" Content="Back" Background="#FF1C1C1C" Foreground="White" Margin="0,0,5,10" BorderBrush="{x:Null}" Click="helpMenuBackBtn_Click" Visibility="Hidden"/>
+                    <Button x:Name="helpMenuNextBtn" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="70" Height="25" Content="Next" Background="#FF1C1C1C" Foreground="White" Margin="0,0,5,10" BorderBrush="{x:Null}" Click="helpMenuNextBtn_Click" Visibility="Hidden"/>
+                    <Button x:Name="helpMenuReturnBtn" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="70" Height="25" Content="Return" Background="#FF1C1C1C" Foreground="White" Margin="0,0,5,10" BorderBrush="{x:Null}" Click="helpMenuReturnBtn_Click"></Button>
+                </StackPanel>
+                <Image  x:Name="helpMenuImage" Width="150" Height="30" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15,0,0,15" Source="Images/helpMenuImage1.png" Visibility="Hidden"/>
+
+            </Grid>
+        </Popup>
+
+        <Popup x:Name="browserDialog" IsOpen="False" Placement="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="10"></RowDefinition>
+
+                </Grid.RowDefinitions>
+                <Rectangle Grid.RowSpan="3" Height="120" Width="320" Fill="#FF4F4F4F"></Rectangle>
+                <Label Content="Please select a directory for your music folder" Foreground="White" HorizontalAlignment="Center" FontWeight="Bold" FontSize="14" Margin="0,5,0,0"></Label>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                    <TextBox x:Name="openBrowserDialogTextBox" Height="30" Width="250" Text="blahhhhhhhh" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
+                    <Button x:Name="openBrowserDialogBtn" Height="30" Width="30" HorizontalAlignment="Right" Background="#FF979797" Click="openBrowserDialogBtn_Click">
+                        <Image Source="Icons/openFolder.png"></Image>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="openBrowserDialogQuitBtn" Content="Quit" Width="70" Height="22" Margin="0,0,10,0" Click="openBrowserDialogQuitBtn_Click"></Button>
+                    <Button x:Name="openBrowserDialogSaveBtn" Content="Save" Width="70" Height="22" Margin="0,0,20,0" Click="openBrowserDialogSaveBtn_Click"></Button>
+                </StackPanel>
             </Grid>
         </Popup>
     </Grid>

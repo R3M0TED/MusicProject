@@ -23,11 +23,35 @@ namespace SynopticMusicPlayer.Properties {
             }
         }
         
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FirstRun {
+            get {
+                return ((bool)(this["FirstRun"]));
+            }
+            set {
+                this["FirstRun"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MusicDirectory {
+            get {
+                return ((string)(this["MusicDirectory"]));
+            }
+            set {
+                this["MusicDirectory"] = value;
+            }
+        }
+        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Songs.mdf;Int" +
-            "egrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\;\n\t\t\t Initial Catalog=MusicPlayerDB; Integrated Security=true; user" +
+            "=sqlUser; password=Password1")]
         public string SongsConnectionString {
             get {
                 return ((string)(this["SongsConnectionString"]));
