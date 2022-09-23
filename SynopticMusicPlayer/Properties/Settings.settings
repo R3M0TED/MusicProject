@@ -8,15 +8,13 @@
     <Setting Name="MusicDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="SongsConnectionString" Type="(Connection string)" Scope="Application">
+    <Setting Name="MusicPlayerConnectionString" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;ConnectionString&gt;Data Source=.\;
-			 Initial Catalog=MusicPlayerDB; Integrated Security=true; user=sqlUser; password=Password1&lt;/ConnectionString&gt;
+  &lt;ConnectionString&gt;Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\MusicPlayer.mdf;Integrated Security=True&lt;/ConnectionString&gt;
   &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
-      <Value Profile="(Default)">Data Source=.\;
-			 Initial Catalog=MusicPlayerDB; Integrated Security=true; user=sqlUser; password=Password1</Value>
+      <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\MusicPlayer.mdf;Integrated Security=True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

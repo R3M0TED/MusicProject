@@ -9,6 +9,8 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/openfolder.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("musicplayer.mdf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("musicplayer_log.ldf")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/help.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage1.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/helpmenuimage2.png")]

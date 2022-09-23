@@ -54,3 +54,5 @@ C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\openFolder.png
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\Icons\help.png
 C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\obj\Debug\SynopticMusicPlayer.csproj.AssemblyReference.cache
+C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\MusicPlayer.mdf
+C:\Users\user\source\repos\SynopticMusicPlayer\MusicProject\SynopticMusicPlayer\bin\Debug\MusicPlayer_log.ldf

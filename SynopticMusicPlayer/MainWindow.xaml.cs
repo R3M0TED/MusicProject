@@ -44,7 +44,7 @@ namespace SynopticMusicPlayer
         public MainWindow()
         {
             InitializeComponent();
-            connectionString = ConfigurationManager.ConnectionStrings["SynopticMusicPlayer.Properties.Settings.SongsConnectionString"].ConnectionString;
+            connectionString = ConfigurationManager.ConnectionStrings["SynopticMusicPlayer.Properties.Settings.MusicPlayerConnectionString"].ConnectionString;
             utilities = new Utilities(player, connectionString, songsDataGrid, currentlyPlayingLabel, noSongsFoundLabel, playlistPickerComboBox, musicPlaying, playBtnImage);
             viewUpdater = new viewUpdater(songsDataGrid, noSongsFoundLabel, connectionString, playlistPickerComboBox, playBtnImage, currentlyPlayingLabel);
             utilities.checkForFirstRun(openBrowserDialogTextBox, browserDialog);
@@ -821,8 +821,10 @@ namespace SynopticMusicPlayer
 
         private void openBrowserDialogSaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("B");
             if (openBrowserDialogTextBox.Text != null && !string.IsNullOrWhiteSpace(openBrowserDialogTextBox.Text))
             {
+                playlistPickerComboBox.IsEnabled = true;
                 string dir = openBrowserDialogTextBox.Text + @"\Music";
 
                 if (Path.GetFileName(openBrowserDialogTextBox.Text) == "Music")

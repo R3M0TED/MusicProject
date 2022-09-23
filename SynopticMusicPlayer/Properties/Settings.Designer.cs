@@ -50,11 +50,11 @@ namespace SynopticMusicPlayer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\;\n\t\t\t Initial Catalog=MusicPlayerDB; Integrated Security=true; user" +
-            "=sqlUser; password=Password1")]
-        public string SongsConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\MusicPlayer.m" +
+            "df;Integrated Security=True")]
+        public string MusicPlayerConnectionString {
             get {
-                return ((string)(this["SongsConnectionString"]));
+                return ((string)(this["MusicPlayerConnectionString"]));
             }
         }
     }
