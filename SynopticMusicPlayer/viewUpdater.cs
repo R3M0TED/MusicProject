@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Configuration;
-using System.Data.SqlClient;
+using System.Data.OleDb;
 using System.Data;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace SynopticMusicPlayer
    
     class viewUpdater
     {
-        SqlConnection connection;
+        OleDbConnection connection;
         private DataGrid songsDataGrid;
         private Label noSongsFoundLabel;
         private string connectionString;
@@ -26,7 +26,6 @@ namespace SynopticMusicPlayer
         private Image playButtonImg;
         private string currentAlbum;
         private Label currentlyPlayingLabel;
-
 
         public viewUpdater(DataGrid dataGrid, Label noSongsFoundLabel, string connectionString, ComboBox playlistPickerComboBox, Image playButtonImg, Label currentlyPlayingLabel)
         {
@@ -38,10 +37,8 @@ namespace SynopticMusicPlayer
             this.currentlyPlayingLabel = currentlyPlayingLabel;
         }
 
-
         public void updateCurrentlyPlayingLabel(int currentTableIndex, bool musicPlaying)
         {
-
             if (musicPlaying == true)
             {
                 TextBlock name = songsDataGrid.Columns[1].GetCellContent(songsDataGrid.Items[currentTableIndex]) as TextBlock;
@@ -51,13 +48,12 @@ namespace SynopticMusicPlayer
             else
             {
                 currentlyPlayingLabel.Content = "Nothing";
-
             }
         }
         public void PopulateSongs(string folderLocation) //Populate DataGrid with ALL SONGS from database
         {
-            using (connection = new SqlConnection(connectionString))
-            using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Songs", connection))
+            using (connection = new OleDbConnection(connectionString))
+            using (OleDbDataAdapter adapter = new OleDbDataAdapter("SELECT * FROM Songs", connection))
             {
                 DataTable songTable = new DataTable();
                 adapter.Fill(songTable);
@@ -82,14 +78,14 @@ namespace SynopticMusicPlayer
             {
                 if (playlistPickerComboBox.SelectedIndex < albumIndex) //Selected a playlist
                 {
-                    var query = "SELECT [Song ID] FROM Playlist WHERE PlaylistName='" + selection + "'";
+                    var query = "SELECT SongID FROM Playlist WHERE PlaylistName='" + selection + "'";
                     //MessageBox.Show(selection.ToString());
-                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    using (OleDbConnection connection = new OleDbConnection(connectionString))
                     {
                         connection.Open();
-                        using (SqlCommand command = new SqlCommand(query, connection))
+                        using (OleDbCommand command = new OleDbCommand(query, connection))
                         {
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            using (OleDbDataReader reader = command.ExecuteReader())
                             {
                                 reader.Read();
                                 var str = reader.GetString(0);
@@ -104,7 +100,7 @@ namespace SynopticMusicPlayer
                                         if (!String.IsNullOrWhiteSpace(newData[i]))
                                         {
                                             reader.Close();
-                                            using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Songs WHERE Id=" + newData[i], connection))
+                                            using (OleDbDataAdapter adapter = new OleDbDataAdapter("SELECT * FROM Songs WHERE Id=" + newData[i], connection))
                                             {
                                                 adapter.Fill(songTable);
                                                 songsDataGrid.ItemsSource = songTable.DefaultView;
@@ -125,9 +121,9 @@ namespace SynopticMusicPlayer
                 }
                 else
                 {
-                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    using (OleDbConnection connection = new OleDbConnection(connectionString))
                     {
-                        var ad = new SqlDataAdapter("SELECT * FROM Songs WHERE Album = @album", connection);
+                        var ad = new OleDbDataAdapter("SELECT * FROM Songs WHERE Album = @album", connection);
                         ad.SelectCommand.Parameters.AddWithValue("@album", selection);
                         DataTable songTable = new DataTable();
                         ad.Fill(songTable);

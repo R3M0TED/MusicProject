@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Configuration;
-using System.Data.SqlClient;
+using System.Data.OleDb;
 using System.Data;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
@@ -13,11 +13,12 @@ using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
+
 namespace SynopticMusicPlayer
 {
     class Utilities
     {
-        SqlConnection connection;
+        OleDbConnection connection;
         private DataGrid songsDataGrid;
         private string connectionString;
         private Label noSongsFoundLabel;
@@ -37,25 +38,25 @@ namespace SynopticMusicPlayer
             this.connectionString = connectionString;
         }
 
-        public void checkForFirstRun(TextBox openBrowserDialogTextBox, Popup browserDialog)
-        {
-            openBrowserDialogTextBox.Text = Properties.Settings.Default.MusicDirectory;
-
-            browserDialog.IsOpen = true;
-        }
-
 
         public void checkForUpdates(string folderLocation)
         {
             int fileCount = Directory.GetFiles(folderLocation, "*.*", SearchOption.AllDirectories).Length;
             int rowCount = 0;
             string rowCountQuery = "SELECT COUNT(*) FROM Songs";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
-                connection.Open();
-                SqlCommand count = new SqlCommand(rowCountQuery, connection);
-                rowCount = (int)count.ExecuteScalar();
-                connection.Close();
+                try
+                {
+                    connection.Open();
+                    OleDbCommand count = new OleDbCommand(rowCountQuery, connection);
+                    rowCount = (int)count.ExecuteScalar();
+                    connection.Close();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message + "Stacktrace: " + ex.StackTrace);
+                }
             }
             if (fileCount != rowCount)
             {
@@ -64,10 +65,10 @@ namespace SynopticMusicPlayer
                 {
                     string filename = Path.GetFileName(fileEntries[i]);
                     string returnFileNameQuery = "SELECT * FROM Songs WHERE Directory = '" + filename + "'";
-                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    using (OleDbConnection connection = new OleDbConnection(connectionString))
                     {
                         connection.Open();
-                        SqlCommand search = new SqlCommand(returnFileNameQuery, connection);
+                        OleDbCommand search = new OleDbCommand(returnFileNameQuery, connection);
                         if (search.ExecuteScalar() == null)
                         {
                             var file = TagLib.File.Create(fileEntries[i]);
@@ -92,7 +93,7 @@ namespace SynopticMusicPlayer
                             {
                                 songArtists = songArtistArray[0];
                             }
-                            SqlCommand addSong = connection.CreateCommand();
+                            OleDbCommand addSong = connection.CreateCommand();
                             addSong.Parameters.AddWithValue("@name", songTitle);
                             addSong.Parameters.AddWithValue("@artist", songArtists);
                             addSong.Parameters.AddWithValue("@dir", filename);
@@ -100,7 +101,7 @@ namespace SynopticMusicPlayer
                             addSong.Parameters.AddWithValue("@length", songLength);
                             try
                             {
-                                addSong.CommandText = "INSERT INTO Songs(Name, Artist, Directory, Album, Length) VALUES(@name, @artist, @dir, @album, @length)";
+                                addSong.CommandText = "INSERT INTO Songs(SongName, Artist, Directory, Album, Length) VALUES(@name, @artist, @dir, @album, @length)";
                                 addSong.ExecuteNonQuery();
                             }
                             catch
@@ -143,12 +144,12 @@ namespace SynopticMusicPlayer
         {
             var query = "SELECT PlaylistName FROM Playlist";
             List<String> nameData = new List<String>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (OleDbCommand command = new OleDbCommand(query, connection))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (OleDbDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -156,7 +157,6 @@ namespace SynopticMusicPlayer
                             if (str != null)
                             {
                                 nameData.Add(str);
-
                             }
                             else
                             {
@@ -178,12 +178,12 @@ namespace SynopticMusicPlayer
             var query = "SELECT Album FROM Songs";
 
             List<String> nameData = new List<String>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (OleDbCommand command = new OleDbCommand(query, connection))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (OleDbDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -193,7 +193,6 @@ namespace SynopticMusicPlayer
                                 if (str != null)
                                 {
                                     nameData.Add(str);
-
                                 }
                                 else
                                 {
@@ -223,10 +222,10 @@ namespace SynopticMusicPlayer
         public string directoryReturner(int index, string folderLocation) //Return the directory of a file using its database ID
         {
             var query = "SELECT Directory FROM Songs WHERE Id = @index";
-            using (connection = new SqlConnection(connectionString))
+            using (connection = new OleDbConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(query, connection);
+                OleDbCommand command = new OleDbCommand(query, connection);
                 command.Parameters.AddWithValue("@index", index);
                 string dir = (string)command.ExecuteScalar();
                 connection.Close();

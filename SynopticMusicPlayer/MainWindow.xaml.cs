@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Configuration;
-using System.Data.SqlClient;
+using System.Data.OleDb;
 using System.Data;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
@@ -13,10 +13,10 @@ using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Reflection;
 
 namespace SynopticMusicPlayer
 {
-
     public partial class MainWindow : Window
     {
         string connectionString;
@@ -44,21 +44,18 @@ namespace SynopticMusicPlayer
         public MainWindow()
         {
             InitializeComponent();
-            connectionString = ConfigurationManager.ConnectionStrings["SynopticMusicPlayer.Properties.Settings.MusicPlayerConnectionString"].ConnectionString;
+            folderLocation = System.IO.Path.Combine(Environment.CurrentDirectory, @"Music");
+            connectionString = ConfigurationManager.ConnectionStrings["SynopticMusicPlayer.Properties.Settings.MusicPlayerDBConnectionString"].ConnectionString;
             utilities = new Utilities(player, connectionString, songsDataGrid, currentlyPlayingLabel, noSongsFoundLabel, playlistPickerComboBox, musicPlaying, playBtnImage);
             viewUpdater = new viewUpdater(songsDataGrid, noSongsFoundLabel, connectionString, playlistPickerComboBox, playBtnImage, currentlyPlayingLabel);
-            utilities.checkForFirstRun(openBrowserDialogTextBox, browserDialog);
+            setUp();
+            viewUpdater.PopulateSongs(folderLocation);
+
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += new EventHandler(timer_Tick);
             tick = new timerTick(changeStatus);
         }
-
-
- 
-
-
-
 
         private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)//Event for volume changed
         {
@@ -76,6 +73,7 @@ namespace SynopticMusicPlayer
             volumeSlider.Value = 25;
             player.MediaEnded += songFinished;
             player.MediaOpened += songOpened;
+            
         }
 
         private void songFinished(object sender, EventArgs e)//Plays the next song when a song finishes
@@ -144,11 +142,12 @@ namespace SynopticMusicPlayer
             playlistName = playlistNameTxtBox.Text;
             if (!string.IsNullOrWhiteSpace(playlistName))
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\play.png")));
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    SqlCommand nameCheck = connection.CreateCommand();
-                    nameCheck.CommandText = "SELECT* FROM Playlist WHERE PlaylistName = @playlistName";
+                    OleDbCommand nameCheck = connection.CreateCommand();
+                    nameCheck.CommandText = "SELECT * FROM Playlist WHERE PlaylistName = @playlistName";
                     nameCheck.Parameters.AddWithValue("@playlistName", playlistName);
                     if (nameCheck.ExecuteScalar() == null)
                     {
@@ -180,12 +179,12 @@ namespace SynopticMusicPlayer
                 playlistName = null;
                 playlistNameTxtBox.Text = "Invalid Name";
             }
-
         }
 
         private void playlistPickerComboBox_DropDownClosed(object sender, EventArgs e)
         {
             var index = utilities.getAlbumIndex();
+            musicPlaying = false;
             viewUpdater.updateDataGrid(folderLocation, musicPlaying,index);
             songSelected = false;
             player.Close();
@@ -208,11 +207,8 @@ namespace SynopticMusicPlayer
         }
 
 
-
         private void addNewPlaylistBtn_Click(object sender, RoutedEventArgs e)
         {
-
-
             if (playlistNameWindow.IsOpen != true)
             {
                 playlistNameWindow.IsOpen = true;
@@ -241,12 +237,11 @@ namespace SynopticMusicPlayer
             if (!String.IsNullOrWhiteSpace(playlistIDs))
             {
                 isCreatingPlaylist = false;
-                var insertPlaylistQuery = "INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES(@playlistName, @songIDs)";
-                //INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES('@playlistName', '@PlaylistIDs')
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                var insertPlaylistQuery = "INSERT INTO Playlist(PlaylistName, SongID) VALUES(@playlistName, @songIDs)";
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    SqlCommand insert = new SqlCommand(insertPlaylistQuery, connection);
+                    OleDbCommand insert = new OleDbCommand(insertPlaylistQuery, connection);
                     insert.Parameters.AddWithValue("@playlistName", playlistName);
                     insert.Parameters.AddWithValue("@songIDs", playlistIDs);
                     finishNewPlaylistBtn.Visibility = Visibility.Hidden;
@@ -277,43 +272,36 @@ namespace SynopticMusicPlayer
         private void songsDataGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DataGridRow row = utilities.getClickedRow(e);
-
             if (row == null)
             {
                 return;
             }
-
             TextBlock songName = songsDataGrid.Columns[1].GetCellContent(songsDataGrid.Items[row.GetIndex()]) as TextBlock;
             TextBlock artist = songsDataGrid.Columns[2].GetCellContent(songsDataGrid.Items[row.GetIndex()]) as TextBlock;
             TextBlock album = songsDataGrid.Columns[3].GetCellContent(songsDataGrid.Items[row.GetIndex()]) as TextBlock;
             TextBlock length = songsDataGrid.Columns[4].GetCellContent(songsDataGrid.Items[row.GetIndex()]) as TextBlock;
-
             TextBlock id = songsDataGrid.Columns[5].GetCellContent(songsDataGrid.Items[row.GetIndex()]) as TextBlock;
-
             if (Mouse.LeftButton == MouseButtonState.Pressed)
             {
                 if (row != null)
                 {
-
                     currentTableIndex = row.GetIndex();//Get clicked index
                     currentPlayingSongDbID = Int32.Parse(id.Text); // set current song ID
-
                     if (isCreatingPlaylist != true)
                     {
                         string dir = utilities.directoryReturner(currentPlayingSongDbID, folderLocation);
                         if (File.Exists(dir))
                         {
                             startSong(dir);
-
                         }
                         else
                         {
-                            using (SqlConnection connection = new SqlConnection(connectionString))
+                            using (OleDbConnection connection = new OleDbConnection(connectionString))
                             {
                                 connection.Open();
                                 var filename = Path.GetFileName(dir);
                                 MessageBox.Show("File does not exist " + filename); //Delete file from db
-                                SqlCommand remove = connection.CreateCommand();
+                                OleDbCommand remove = connection.CreateCommand();
                                 remove.CommandText = "DELETE FROM Songs WHERE Directory = @dir";
                                 remove.Parameters.AddWithValue("@dir", filename);
                                 remove.ExecuteNonQuery();
@@ -364,11 +352,7 @@ namespace SynopticMusicPlayer
                 addToPlaylistPrompt.IsOpen = false;
             }
         }
-
-        
-
-        
-
+   
         private void cancelAddToPlaylistBtn_Click(object sender, RoutedEventArgs e)
         {
             rightClickedSongID = 0;
@@ -381,16 +365,15 @@ namespace SynopticMusicPlayer
             var item = addToPlaylistNamesComboBox.SelectedValue;
             if (item != null && !string.IsNullOrWhiteSpace(item.ToString()))
             {
-                var selectPlaylistIDsQuery = "SELECT [Song ID] FROM Playlist WHERE PlaylistName = @playlistName";
-                //INSERT INTO Playlist(PlaylistName, [Song ID]) VALUES('@playlistName', '@PlaylistIDs')
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                var selectPlaylistIDsQuery = "SELECT SongID FROM Playlist WHERE PlaylistName = @playlistName";
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    SqlCommand select = new SqlCommand(selectPlaylistIDsQuery, connection);
+                    OleDbCommand select = new OleDbCommand(selectPlaylistIDsQuery, connection);
                     select.Parameters.AddWithValue("@playlistName", item);
                     var IDs = select.ExecuteScalar() + "," + rightClickedSongID;
-                    var insertNewSong = "UPDATE Playlist SET [Song ID] = @IDs WHERE PlaylistName = @playlistName";
-                    SqlCommand insertSong = new SqlCommand(insertNewSong, connection);
+                    var insertNewSong = "UPDATE Playlist SET SongID = @IDs WHERE PlaylistName = @playlistName";
+                    OleDbCommand insertSong = new OleDbCommand(insertNewSong, connection);
                     insertSong.Parameters.AddWithValue("@IDs", IDs);
                     insertSong.Parameters.AddWithValue("@playlistName", item);
                     insertSong.ExecuteNonQuery();
@@ -401,7 +384,6 @@ namespace SynopticMusicPlayer
                     addToPlaylistPrompt.IsOpen = false;
                     viewUpdater.updateDataGrid(folderLocation, musicPlaying, null);
                     songSelected = false;
-
                 }
             }
             else
@@ -412,13 +394,14 @@ namespace SynopticMusicPlayer
 
         private void deleteSongEntirelyMenuBtn_Click(object sender, RoutedEventArgs e)
         {
-            var deleteSong = "DELETE FROM Songs WHERE Id = @ID ";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            isCreatingPlaylist = false;
+             var deleteSong = "DELETE FROM Songs WHERE Id = @ID ";
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 var dir = utilities.directoryReturner(rightClickedSongID, folderLocation);
                 File.Delete(dir);
                 connection.Open();
-                SqlCommand delete = new SqlCommand(deleteSong, connection);
+                OleDbCommand delete = new OleDbCommand(deleteSong, connection);
                 delete.Parameters.AddWithValue("@ID", rightClickedSongID);
                 delete.ExecuteNonQuery();
                 rightClickMenu.IsOpen = false;
@@ -426,7 +409,6 @@ namespace SynopticMusicPlayer
                 rightClickMenu.IsOpen = false;
                 viewUpdater.updateDataGrid(folderLocation, musicPlaying, null);
                 songSelected = false;
-
             }
         }
 
@@ -442,18 +424,18 @@ namespace SynopticMusicPlayer
             }
             else
             {
-                playlistPickerComboBox.SelectedValue = "All Songs";
-                playlistPickerComboBox.IsEnabled = false;
-                searchPlaceholder.Visibility = Visibility.Hidden;
-                var query = "SELECT * FROM Songs WHERE Name LIKE @info";
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    var ad = new SqlDataAdapter(query, connection);
-                    ad.SelectCommand.Parameters.AddWithValue("@info", "%" + searchInfo + "%");
-                    DataTable songTable = new DataTable();
-                    ad.Fill(songTable);
-                    songsDataGrid.ItemsSource = songTable.DefaultView;
-                }
+                    playlistPickerComboBox.SelectedValue = "All Songs";
+                    playlistPickerComboBox.IsEnabled = false;
+                    searchPlaceholder.Visibility = Visibility.Hidden;
+                    var query = "SELECT * FROM Songs WHERE SongName LIKE @info";
+                    using (OleDbConnection connection = new OleDbConnection(connectionString))
+                    {
+                        var ad = new OleDbDataAdapter(query, connection);
+                        ad.SelectCommand.Parameters.AddWithValue("@info", "%" + searchInfo + "%");
+                        DataTable songTable = new DataTable();
+                        ad.Fill(songTable);
+                        songsDataGrid.ItemsSource = songTable.DefaultView;
+                    }             
             }
         }
 
@@ -650,12 +632,11 @@ namespace SynopticMusicPlayer
             songSelected = false;
             playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\play.png")));
             player.Stop();
-
             if (albumName.Text != null)
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
-                    var ad = new SqlDataAdapter("SELECT * FROM Songs WHERE Album = @album", connection);
+                    var ad = new OleDbDataAdapter("SELECT * FROM Songs WHERE Album = @album", connection);
                     ad.SelectCommand.Parameters.AddWithValue("@album", albumName.Text);
                     DataTable songTable = new DataTable();
                     ad.Fill(songTable);
@@ -676,32 +657,32 @@ namespace SynopticMusicPlayer
             if (playlistPickerComboBox.SelectedIndex != 0 && playlistPickerComboBox.SelectedIndex < utilities.getAlbumIndex())
             {
                 var playlistName = playlistPickerComboBox.SelectedValue;
-                var query = "SELECT [Song ID] FROM Playlist WHERE PlaylistName = @playlistName";
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                var query = "SELECT SongID FROM Playlist WHERE PlaylistName = @playlistName";
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    using (SqlCommand retrieveIDs = new SqlCommand(query, connection))
+                    using (OleDbCommand retrieveIDs = new OleDbCommand(query, connection))
                     {
                         retrieveIDs.Parameters.AddWithValue("@playlistName", playlistName);
-                        using (SqlDataReader reader = retrieveIDs.ExecuteReader())
+                        using (OleDbDataReader reader = retrieveIDs.ExecuteReader())
                         {
                             reader.Read();
-
                             var str = reader.GetString(0);
                             if (str != null)
                             {
-
+                                //MessageBox.Show("TableIndex:" + rightClickedTableIndex + "ID" + rightClickedSongID);
                                 List<String> IDs = str.Split(',').ToList();
                                 IDs.RemoveAt(rightClickedTableIndex);
                                 string newID = string.Join(",", IDs);
                                 reader.Close();
-                                using (SqlCommand insertIDs = new SqlCommand(query, connection))
+                                using (OleDbCommand insertIDs = new OleDbCommand(query, connection))
                                 {
-                                    insertIDs.CommandText = "UPDATE Playlist SET [Song ID] = @newIds WHERE PlaylistName = @PlaylistName";
+                                    insertIDs.CommandText = "UPDATE Playlist SET SongID = @newIds WHERE PlaylistName = @PlaylistName";
                                     insertIDs.Parameters.AddWithValue("@newIDs", newID);
                                     insertIDs.Parameters.AddWithValue("@PlaylistName", playlistName.ToString());
                                     insertIDs.ExecuteNonQuery();
-                                    viewUpdater.updateDataGrid(folderLocation, musicPlaying, null);
+                                    musicPlaying = false;
+                                    player.Close();
                                     songSelected = false;
                                     rightClickMenu.IsOpen = false;
                                 }
@@ -714,6 +695,7 @@ namespace SynopticMusicPlayer
             {
                 MessageBox.Show("You are not within a playlist");
             }
+            viewUpdater.updateDataGrid(folderLocation, musicPlaying, utilities.getAlbumIndex());
         }
 
         private void nextSongBtn_Click(object sender, RoutedEventArgs e)
@@ -726,8 +708,6 @@ namespace SynopticMusicPlayer
                     TextBlock id = songsDataGrid.Columns[5].GetCellContent(songsDataGrid.Items[currentTableIndex]) as TextBlock;
                     currentPlayingSongDbID = Int32.Parse(id.Text);
                     string dir = utilities.directoryReturner(Int32.Parse(id.Text), folderLocation);
-                    //MessageBox.Show(id.Text); //outputs 2
-
                     if (dir != null && isCreatingPlaylist == false)
                     {
                         startSong(dir);
@@ -790,7 +770,6 @@ namespace SynopticMusicPlayer
                     {
                         startSong(dir);
                     }
-
                 }
                 catch
                 {
@@ -807,62 +786,7 @@ namespace SynopticMusicPlayer
             }
         }
 
-        private void openBrowserDialogBtn_Click(object sender, RoutedEventArgs e)
-        {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = "C:\\Users";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                var dir = dialog.FileName;
-                openBrowserDialogTextBox.Text = dialog.FileName;
-            }
-        }
 
-        private void openBrowserDialogSaveBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("B");
-            if (openBrowserDialogTextBox.Text != null && !string.IsNullOrWhiteSpace(openBrowserDialogTextBox.Text))
-            {
-                playlistPickerComboBox.IsEnabled = true;
-                string dir = openBrowserDialogTextBox.Text + @"\Music";
-
-                if (Path.GetFileName(openBrowserDialogTextBox.Text) == "Music")
-                {
-                    MessageBox.Show("Music folder found");
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.MusicDirectory = openBrowserDialogTextBox.Text;
-                    folderLocation = Properties.Settings.Default.MusicDirectory;
-                    browserDialog.IsOpen = false;
-                    Properties.Settings.Default.FirstRun = false;
-                    Properties.Settings.Default.Save();
-                }
-                else
-                {
-                    MessageBox.Show("New folder has been created");
-                    System.IO.Directory.CreateDirectory(dir);
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.MusicDirectory = dir;
-                    folderLocation = Properties.Settings.Default.MusicDirectory;
-                    browserDialog.IsOpen = false;
-                    Properties.Settings.Default.FirstRun = false;
-                    Properties.Settings.Default.Save();
-                }
-
-
-                setUp();
-                viewUpdater.PopulateSongs(folderLocation);
-            }
-            else
-            {
-                MessageBox.Show("Invalid Directory");
-            }
-        }
-
-        private void openBrowserDialogQuitBtn_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
     }
 }
 

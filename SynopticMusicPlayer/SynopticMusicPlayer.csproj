@@ -31,7 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -39,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,6 +49,25 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -60,7 +80,9 @@
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero2" />
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -85,10 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MusicPlayerDataSet.Designer.cs">
+    <Compile Include="MusicPlayerDBDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>MusicPlayerDataSet.xsd</DependentUpon>
+      <DependentUpon>MusicPlayerDBDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="uiText.cs" />
     <Compile Include="Utilities.cs" />
@@ -124,16 +146,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="MusicPlayerDataSet.xsc">
-      <DependentUpon>MusicPlayerDataSet.xsd</DependentUpon>
+    <None Include="MusicPlayerDBDataSet.xsc">
+      <DependentUpon>MusicPlayerDBDataSet.xsd</DependentUpon>
     </None>
-    <None Include="MusicPlayerDataSet.xsd">
+    <None Include="MusicPlayerDBDataSet.xsd">
       <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>MusicPlayerDataSet.Designer.cs</LastGenOutput>
+      <LastGenOutput>MusicPlayerDBDataSet.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="MusicPlayerDataSet.xss">
-      <DependentUpon>MusicPlayerDataSet.xsd</DependentUpon>
+    <None Include="MusicPlayerDBDataSet.xss">
+      <DependentUpon>MusicPlayerDBDataSet.xsd</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -148,12 +170,8 @@
     <Content Include="Icons\openFolder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="MusicPlayer.mdf">
+    <Content Include="MusicPlayerDB.accdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MusicPlayer_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>MusicPlayer.mdf</DependentUpon>
     </Content>
     <Resource Include="Icons\listview.png" />
     <Resource Include="Icons\addPlaylist.png" />
