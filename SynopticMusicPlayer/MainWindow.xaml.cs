@@ -22,7 +22,6 @@ namespace SynopticMusicPlayer
         string connectionString;
         MediaPlayer player;
         DataTable playlistViewer;
-        bool musicPlaying;
         bool songSelected;
         bool isCreatingPlaylist;
         int currentPlayingSongDbID;
@@ -40,6 +39,9 @@ namespace SynopticMusicPlayer
         viewUpdater viewUpdater;
         timerTick tick;
         bool isDragging;
+        bool musicPlaying;
+
+
 
         public MainWindow()
         {
@@ -57,6 +59,8 @@ namespace SynopticMusicPlayer
             tick = new timerTick(changeStatus);
         }
 
+    
+
         private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)//Event for volume changed
         {
             player.Volume = volumeSlider.Value / 100;
@@ -69,6 +73,7 @@ namespace SynopticMusicPlayer
             utilities.loadPlaylistNames(playlistPickerComboBox);
             utilities.loadAlbumNames(playlistPickerComboBox);
             player = new MediaPlayer();
+            playbackSlider.IsEnabled = false;
             player.Volume = 0;
             volumeSlider.Value = 25;
             player.MediaEnded += songFinished;
@@ -95,6 +100,7 @@ namespace SynopticMusicPlayer
             }
             else
             {
+                musicPlaying = false;
                 MessageBox.Show("No more music");
             }
         }
@@ -187,6 +193,8 @@ namespace SynopticMusicPlayer
             musicPlaying = false;
             viewUpdater.updateDataGrid(folderLocation, musicPlaying,index);
             songSelected = false;
+            playbackSlider.Value = 0;
+            playbackSlider.IsEnabled = false;
             player.Close();
         }
 
@@ -202,7 +210,9 @@ namespace SynopticMusicPlayer
                 var dir = utilities.directoryReturner(Int32.Parse(id.Text), folderLocation);
                 currentPlayingSongDbID = Int32.Parse(id.Text);
                 player.Open(new Uri(dir));
+                playBtnImage.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Environment.CurrentDirectory, @"Icons\Pause.png")));
                 player.Play();
+                musicPlaying = true;
             }
         }
 
@@ -266,7 +276,7 @@ namespace SynopticMusicPlayer
                 MessageBox.Show("Pick some songs");
             }
         }
-
+      
 
 
         private void songsDataGrid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -293,6 +303,8 @@ namespace SynopticMusicPlayer
                         if (File.Exists(dir))
                         {
                             startSong(dir);
+                            playbackSlider.IsEnabled = true;
+
                         }
                         else
                         {
@@ -382,7 +394,7 @@ namespace SynopticMusicPlayer
                     isCreatingPlaylist = false;
                     rightClickedSongID = 0;
                     addToPlaylistPrompt.IsOpen = false;
-                    viewUpdater.updateDataGrid(folderLocation, musicPlaying, null);
+                    viewUpdater.updateDataGrid(folderLocation, musicPlaying, utilities.getAlbumIndex());
                     songSelected = false;
                 }
             }
@@ -427,7 +439,7 @@ namespace SynopticMusicPlayer
                     playlistPickerComboBox.SelectedValue = "All Songs";
                     playlistPickerComboBox.IsEnabled = false;
                     searchPlaceholder.Visibility = Visibility.Hidden;
-                    var query = "SELECT * FROM Songs WHERE SongName LIKE @info";
+                    var query = "SELECT * FROM Songs WHERE SongName LIKE @info OR Artist LIKE @info OR Album LIKE @info";
                     using (OleDbConnection connection = new OleDbConnection(connectionString))
                     {
                         var ad = new OleDbDataAdapter(query, connection);
@@ -599,6 +611,11 @@ namespace SynopticMusicPlayer
         }
 
         private void playbackSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TimeSpan ts = new TimeSpan(0, 0, 0, (int)playbackSlider.Value, 0);
+            changePosition(ts);
+        }
+        private void playbackSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             TimeSpan ts = new TimeSpan(0, 0, 0, (int)playbackSlider.Value, 0);
             changePosition(ts);

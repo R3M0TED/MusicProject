@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SynopticMusicPlayer"
         mc:Ignorable="d"
-        Title="MainWindow" x:Name="MainWin" Height="450" Width="850" MinWidth="800" MinHeight="400" LocationChanged="Window_LocationChanged" SizeChanged="MainWin_SizeChanged">
+        Title="Music Player" x:Name="MainWin" Height="450" Width="850" MinWidth="800" MinHeight="400" LocationChanged="Window_LocationChanged" SizeChanged="MainWin_SizeChanged">
     <Window.Resources>
         <Style TargetType="Button" x:Key="RoundButton">
             <Setter Property="BorderThickness" Value="2"></Setter>
@@ -371,7 +371,7 @@
             <Button Name="nextSongBtn" Grid.Row="1" Grid.Column="2" Background="{x:Null}" BorderBrush="{x:Null}" Height="85" Click="nextSongBtn_Click">
                 <Image x:Name="nextBtnImage" Source="Icons/forward.png"></Image>
             </Button>
-            <Slider x:Name="playbackSlider" IsMoveToPointEnabled="True" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Margin="15,10,15,0" Style="{DynamicResource SliderStyle1}" Maximum="100" MouseLeftButtonUp="playbackSlider_MouseLeftButtonUp"/>
+            <Slider Thumb.DragCompleted="playbackSlider_DragCompleted" x:Name="playbackSlider" IsMoveToPointEnabled="True" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Margin="15,10,15,0" Style="{DynamicResource SliderStyle1}" Maximum="100" MouseLeftButtonUp="playbackSlider_MouseLeftButtonUp"/>
             <Slider x:Name="volumeSlider"  Grid.ColumnSpan="2" Grid.Row="2" Margin="15,0,80,25" ValueChanged="volumeSlider_ValueChanged" Maximum="100" VerticalAlignment="Bottom" Style="{DynamicResource SliderStyle1}"/>
             <Button Style="{DynamicResource RoundButton}" x:Name="shuffleBtn" Margin="5,0,15,15" Grid.Column="3" Grid.Row="2" FontSize="16" Background="{x:Null}" Foreground="White" Width="40" Height="40" Click="shuffleBtn_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Image Source="Icons/shuffle.png">
@@ -515,7 +515,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Rectangle Grid.Row="0" Grid.RowSpan="3" Height="250" Width="420" Fill="#FF2F2F2F" MinWidth="400" MinHeight="250" Stroke="Black"></Rectangle>
+                <Rectangle Grid.Row="0" Grid.RowSpan="3" Height="250" Width="420" Fill="#FF2F2F2F" MinWidth="400" MinHeight="250"/>
                 <Label Grid.Row="0" Content="Need Help?" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Top" Margin="10,5,0,0" Height="40"></Label>
                 <StackPanel Grid.Row="3" Background="#FF272727">
                     <StackPanel.Resources>

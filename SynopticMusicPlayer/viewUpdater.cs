@@ -141,8 +141,6 @@ namespace SynopticMusicPlayer
                 PopulateSongs(folderLocation);
             }
         }
-
-
     }
     }
 
